@@ -8,7 +8,6 @@
  * @returns {Promise<string, string>}
  */
 
-console.log("Завдання 1.3\n");
 function validateEmail(email) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -110,4 +109,151 @@ function checkAge(age) {
 checkAge(25).then(console.log).catch(console.error);
 checkAge(70).then(console.log).catch(console.error);
 checkAge(15).then(console.log).catch(console.error);
-checkAge(-5).then(console.log).catch(console.error);
+checkAge(-5).then(console.log).catch(console.error); 
+
+// ==================== ЗАВДАННЯ 2.2 ====================
+/**
+ * Створіть функцію, яка приймає масив чисел
+ * і повертає проміс з сумою цих чисел
+ * 
+ * @param {number[]} numbers 
+ * @returns {Promise<number>}
+ */
+
+function sumNumbers(numbers) {
+    // TODO: Порахуйте суму та поверніть її через Promise.resolve()
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const sum = numbers.reduce((acc, num) => acc + num, 0);
+            resolve(sum);
+        }, 300);
+    });
+}
+
+// Перевірка:
+sumNumbers([1, 2, 3, 4, 5])
+    .then(sum => console.log(' Тест 2.2:', sum)); // Очікується: 15
+
+// ==================== ЗАВДАННЯ 2.3 ====================
+/**
+ * Створіть функцію, яка конвертує об'єкт користувача
+ * додаючи йому поле fullName
+ * 
+ * @param {{firstName: string, lastName: string}} user 
+ * @returns {Promise<{firstName: string, lastName: string, fullName: string}>}
+ */
+
+function addFullName(user) {
+    // TODO: Додайте поле fullName і поверніть через проміс
+    // fullName = firstName + ' ' + lastName
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const fullName = user.firstName + ' ' + user.lastName;
+            resolve({ ...user, fullName });
+        }, 300);
+    });
+}
+
+// Перевірка:
+addFullName({ firstName: 'John', lastName: 'Doe' })
+    .then(user => console.log(' Тест 2.3:', user));
+// Очікується: { firstName: 'John', lastName: 'Doe', fullName: 'John Doe' }
+
+// ==================== ЗАВДАННЯ 2.6 ====================
+/**
+ * Створіть функцію, яка конвертує масив значень в масив промісів
+ * Кожен проміс має резолвитися з відповідним значенням
+ * 
+ * @param {any[]} values 
+ * @returns {Promise<any>[]}
+ */
+function valuesToPromises(values) {
+    // TODO: Конвертуйте кожне значення в проміс
+    return values.map(value => Promise.resolve(value));
+}
+
+// Перевірка:
+const promises = valuesToPromises([1, 2, 3]);
+Promise.all(promises)
+    .then(results => console.log(' Тест 2.6:', results));
+// Очікується: [1, 2, 3]
+
+// ==================== ЗАВДАННЯ 7.1 ====================
+/**
+ * Створіть ланцюжок, який:
+ * 1. Починається з числа 5
+ * 2. Множить на 2
+ * 3. Додає 10
+ * 4. Конвертує в рядок
+ * 
+ * Очікуваний результат: "20"
+ */
+function simpleChain() {
+    return Promise.resolve(5)
+        // TODO: Додайте .then() для множення на 2
+        // TODO: Додайте .then() для додавання 10
+        // TODO: Додайте .then() для конвертації в рядок
+        .then(num => num * 2) // Множимо на 2
+        .then(num => num + 10) // Додаємо 10
+        .then(num => num.toString()); // Конвертуємо в рядок
+}
+
+// Перевірка:
+simpleChain()
+    .then(result => console.log(' Тест 7.1:', result)); // "20"
+
+// ==================== ЗАВДАННЯ 7.3 ====================
+/**
+ * Створіть ланцюжок з асинхронними операціями
+ * Використовуйте функції нижче для побудови ланцюжка
+ */
+
+function fetchUserData(userId) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve({ id: userId, username: 'user_' + userId });
+        }, 100);
+    });
+}
+
+function fetchUserPosts(user) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve({
+                ...user,
+                posts: ['Post 1', 'Post 2', 'Post 3']
+            });
+        }, 100);
+    });
+}
+
+function countPosts(userData) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve({
+                ...userData,
+                postCount: userData.posts.length
+            });
+        }, 100);
+    });
+}
+
+/**
+ * Створіть функцію, яка:
+ * 1. Отримує дані користувача
+ * 2. Отримує його пости
+ * 3. Рахує кількість постів
+ * 
+ * @param {number} userId 
+ * @returns {Promise<{id: number, username: string, posts: string[], postCount: number}>}
+ */
+function getUserWithPostCount(userId) {
+    // TODO: Побудуйте ланцюжок з трьох функцій вище
+    return fetchUserData(userId)
+        .then(user => fetchUserPosts(user))
+        .then(userData => countPosts(userData));
+}
+
+// Перевірка:
+getUserWithPostCount(123)
+    .then(result => console.log(' Тест 7.3:', result));
