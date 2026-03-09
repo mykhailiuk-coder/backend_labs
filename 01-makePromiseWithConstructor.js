@@ -19,14 +19,14 @@ function makePromiseWithConstructor(itShouldResolve) {
 }
 
 // Перевірка:
-makePromiseWithConstructor(true)
+/*makePromiseWithConstructor(true)
     .then(result => console.log(' Тест 1.1 (resolve):', result))
     .catch(error => console.log('   Помилка:', error));
 
 makePromiseWithConstructor(false)
     .then(result => console.log('   Не повинно виконатися'))
     .catch(error => console.log(' Тест 1.1 (reject):', error));
-
+*/
 
 // ==================== ЗАВДАННЯ 1.2 ====================
 /**
@@ -42,14 +42,14 @@ function checkEvenNumber(number) {
 }
 
 // Перевірка:
-checkEvenNumber(4)
+/*checkEvenNumber(4)
     .then(num => console.log(' Тест 1.2 (парне):', num))
     .catch(err => console.log('   Помилка:', err));
 
 checkEvenNumber(5)
     .then(num => console.log('   Не повинно виконатися'))
     .catch(err => console.log(' Тест 1.2 (непарне):', err));
-
+*/
 
 // ==================== ЗАВДАННЯ 1.3 ====================
 /**
@@ -64,18 +64,14 @@ checkEvenNumber(5)
 function validateEmail(email) {
     // TODO: Реалізуйте функцію
     // Підказка: використовуйте includes('@') та includes('.')
-    return email.includes("@") && email.includes(".");
+    return new Promise((resolve, reject) => {
+        if (email.includes('@') && email.includes('.')) {
+            resolve(email);
+        } else {
+            reject('Invalid email');
+        }
+    });
 }
-
-let promise = new Promise((resolve, reject) => {
-  setTimeout((email) => {
-    if (validateEmail(email)){
-        resolve(email);
-    } else {
-        reject(Error);
-    }
-  }, 2000);
-});
 
 // Перевірка:
 validateEmail('test@example.com')
@@ -101,6 +97,17 @@ validateEmail('invalid-email')
  */
 function authenticateUser(username, password) {
     // TODO: Реалізуйте функцію з всіма перевірками
+        return new Promise((resolve, reject) => {
+        if (!username) {
+            reject('Username is required');
+        } else if (!password) {
+            reject('Password is required');
+        } else if (password.length < 6) {
+            reject('Password too short');
+        } else {
+            resolve({ username, authenticated: true });
+        }
+    });
 }
 
 // Перевірка:
@@ -130,13 +137,24 @@ authenticateUser('john', '12345')
  */
 function checkAge(age) {
     // TODO: Реалізуйте функцію
+    return new Promise((resolve, reject) => {
+        if (age < 0) {
+            reject('Invalid age');
+        } else if (age < 18) {
+            reject('Too young');
+        } else if (age < 65) {
+            resolve({ age, category: 'adult' });
+        } else {
+            resolve({ age, category: 'senior' });
+        }
+    });
 }
 
 // Перевірка (розкоментуйте після реалізації):
-// checkAge(25).then(console.log).catch(console.error);
-// checkAge(70).then(console.log).catch(console.error);
-// checkAge(15).then(console.log).catch(console.error);
-// checkAge(-5).then(console.log).catch(console.error);
+checkAge(25).then(console.log).catch(console.error);
+checkAge(70).then(console.log).catch(console.error);
+checkAge(15).then(console.log).catch(console.error);
+checkAge(-5).then(console.log).catch(console.error);
 
 
 /**
