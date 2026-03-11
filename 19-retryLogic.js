@@ -93,6 +93,20 @@ class ValidationError extends Error {
  */
 function conditionalRetry(fn, maxRetries, shouldRetry) {
     // TODO: Повторюйте тільки якщо shouldRetry(error) повертає true
+    return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const retry = () => {
+            attempts++;
+            fn().then(resolve).catch(error => {
+                if (attempts < maxRetries && shouldRetry(error)) {
+                    setTimeout(retry, 1000 * attempts); // Затримка збільшується з кожним разом
+                } else {
+                    reject(error);
+                }
+            });
+        };
+        retry();
+    });
 }
 
 // Перевірка:
