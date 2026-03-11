@@ -13,6 +13,18 @@
 function analyzeResults(promises) {
     // TODO: Використайте Promise.allSettled()
     // Поверніть об'єкт {successful: number, failed: number, results: [...]}
+    return Promise.allSettled(promises).then(results => {
+        let successful = 0;
+        let failed = 0;
+        results.forEach(result => {
+            if (result.status === 'fulfilled') {
+                successful++;
+            } else {
+                failed++;
+            }
+        });
+        return { successful, failed, results };
+    });
 }
 
 // Перевірка:
@@ -103,8 +115,8 @@ const apis = [
 fetchMultipleAPIs(apis)
     .then(result => {
         console.log(' Тест 11.3:');
-        console.log('  Successful:', result.successful.length);
-        console.log('  Failed:', result.failed.length);
+        //console.log('  Successful:', result.successful.length);
+        //console.log('  Failed:', result.failed.length);
     });
 
 
@@ -150,9 +162,9 @@ async function monitorServers() {
 monitorServers()
     .then(report => {
         console.log(' Тест 11.4: Server Health Report');
-        console.log('  Healthy:', report.healthy.length);
-        console.log('  Unhealthy:', report.unhealthy.length);
-        console.log('  Total:', report.totalServers);
+        //console.log('  Healthy:', report.healthy.length);
+        //console.log('  Unhealthy:', report.unhealthy.length);
+        //console.log('  Total:', report.totalServers);
     });
 
 
@@ -209,6 +221,53 @@ function saveData(data) {
  */
 async function processBatchWithDetails(items) {
     // TODO: Складна пакетна обробка з детальною статистикою
+    return Promise.allSettled(items.map(item => {
+        return Promise.allSettled([
+            validateData(item),
+            processData(item),
+            saveData(item)
+        ]).then(results => {
+            const itemReport = { id: item.id, value: item.value };
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled') {
+                    itemReport[`step${index + 1}`] = 'success';
+                } else {
+                    itemReport[`step${index + 1}`] = 'failed';
+                    itemReport.error = result.reason.message;
+                }
+            });
+            return itemReport;
+        });
+    })).then(batchResults => {
+        let fullyProcessed = 0;
+        let partiallyProcessed = 0;
+        let failed = 0;
+
+        batchResults.forEach(result => {
+            if (result.status === 'fulfilled') {
+                const steps = Object.keys(result.value).filter(key => key.startsWith('step'));
+                const successes = steps.filter(step => result.value[step] === 'success').length;
+
+                if (successes === steps.length) {
+                    fullyProcessed++;
+                } else if (successes > 0) {
+                    partiallyProcessed++;
+                } else {
+                    failed++;
+                }
+            } else {
+                failed++;
+            }
+        });
+
+        return {
+            totalItems: items.length,
+            fullyProcessed,
+            partiallyProcessed,
+            failed,
+            details: batchResults.map(r => r.value || { error: r.reason.message })
+        };
+    });
 }
 
 // Перевірка:
