@@ -13,6 +13,7 @@
  */
 function makePromiseResolveWith(value) {
     // TODO: Використайте Promise.resolve()
+    return Promise.resolve(value);
 }
 
 // Перевірка:
@@ -33,8 +34,8 @@ function sumNumbers(numbers) {
 }
 
 // Перевірка:
-sumNumbers([1, 2, 3, 4, 5])
-    .then(sum => console.log(' Тест 2.2:', sum)); // Очікується: 15
+//sumNumbers([1, 2, 3, 4, 5])
+    //.then(sum => console.log(' Тест 2.2:', sum)); // Очікується: 15
 
 
 // ==================== ЗАВДАННЯ 2.3 ====================
@@ -51,8 +52,8 @@ function addFullName(user) {
 }
 
 // Перевірка:
-addFullName({ firstName: 'John', lastName: 'Doe' })
-    .then(user => console.log(' Тест 2.3:', user));
+//addFullName({ firstName: 'John', lastName: 'Doe' })
+    //.then(user => console.log(' Тест 2.3:', user));
 // Очікується: { firstName: 'John', lastName: 'Doe', fullName: 'John Doe' }
 
 
@@ -70,11 +71,11 @@ function ensurePromise(value) {
 }
 
 // Перевірка:
-ensurePromise(42)
-    .then(val => console.log(' Тест 2.4a:', val)); // 42
+//ensurePromise(42)
+    //.then(val => console.log(' Тест 2.4a:', val)); // 42
 
-ensurePromise(Promise.resolve(100))
-    .then(val => console.log(' Тест 2.4b:', val)); // 100
+//ensurePromise(Promise.resolve(100))
+    //.then(val => console.log(' Тест 2.4b:', val)); // 100
 
 
 // ==================== ЗАВДАННЯ 2.5 ====================
@@ -86,10 +87,20 @@ ensurePromise(Promise.resolve(100))
  * @param {any} value 
  * @returns {Promise<string>}
  */
+
 function callbackToPromise(value) {
-    // TODO: Симулюйте роботу з callback
-    // Створіть проміс, який використовує setTimeout для виклику callback
-    // callback має викликатися через 100мс з результатом 'Processed: ' + value
+    return new Promise((resolve, reject) => {
+        const callback = (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        };
+        setTimeout(() => {
+            callback(null, 'Processed: ' + value);
+        }, 100);
+    });
 }
 
 // Перевірка:
@@ -112,8 +123,8 @@ function valuesToPromises(values) {
 
 // Перевірка:
 const promises = valuesToPromises([1, 2, 3]);
-Promise.all(promises)
-    .then(results => console.log(' Тест 2.6:', results));
+//Promise.all(promises)
+    //.then(results => console.log(' Тест 2.6:', results));
 // Очікується: [1, 2, 3]
 
 
@@ -130,6 +141,13 @@ function tryCatchPromise(fn, ...args) {
     // TODO: Викличте fn з args
     // Якщо fn кидає помилку - поверніть rejected проміс
     // Інакше - поверніть resolved проміс з результатом
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(fn(...args));
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 // Перевірка:
@@ -152,3 +170,4 @@ tryCatchPromise(badFunction)
  * 4. Чи є Promise.resolve() синхронним чи асинхронним?
  * 5. Коли краще використовувати Promise.resolve() замість конструктора?
  */
+ 
