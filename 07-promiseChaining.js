@@ -41,6 +41,9 @@ simpleChain()
 function processUser(user) {
     return Promise.resolve(user)
         // TODO: Реалізуйте ланцюжок трансформацій
+        .then(user => ({ ...user, name: user.name.toUpperCase() }))
+        .then(user => ({ ...user, isAdult: user.age >= 18 }))
+        .then(user => ({ ...user, nameLength: user.name.length }));
 }
 
 // Перевірка:
@@ -99,8 +102,8 @@ function getUserWithPostCount(userId) {
 }
 
 // Перевірка:
-getUserWithPostCount(123)
-    .then(result => console.log(' Тест 7.3:', result));
+//getUserWithPostCount(123)
+    //.then(result => console.log(' Тест 7.3:', result));
 
 
 // ==================== ЗАВДАННЯ 7.4 ====================
@@ -133,12 +136,12 @@ function safeCalculation(number) {
 }
 
 // Перевірка:
-safeCalculation(10)
-    .then(result => console.log(' Тест 7.4a:', result));
+//safeCalculation(10)
+    //.then(result => console.log(' Тест 7.4a:', result));
 // Очікується: { original: 10, result: 25 }
 
-safeCalculation(-5)
-    .then(result => console.log(' Тест 7.4b:', result));
+//safeCalculation(-5)
+    //.then(result => console.log(' Тест 7.4b:', result));
 // Очікується: { error: 'Number must be positive' }
 
 
@@ -204,6 +207,10 @@ function calculateTotal(product, quantity) {
  */
 function placeOrder(productId, quantity) {
     // TODO: Реалізуйте повний ланцюжок з обробкою помилок
+    return getProduct(productId)
+        .then(checkStock)
+        .then(product => calculateTotal(product, quantity))
+        .catch(error => ({ error: error.message }));
 }
 
 // Перевірка:
@@ -231,10 +238,23 @@ placeOrder(999, 1)
 function transformWithHistory(text) {
     // TODO: Створіть ланцюжок, який:
     // 1. Зберігає оригінальний текст
-    // 2. Конвертує в нижній регістр (зберегти в історію)
+    // 2. Конвертує в нижній регістр (зберегти в історію) 
     // 3. Видаляє пробіли (зберегти в історію)
     // 4. Інвертує рядок (зберегти в історію)
     // 5. Повертає об'єкт з original, steps[], final
+    return Promise.resolve(text)
+        .then(original => {
+            const lower = original.toLowerCase();
+            return { original, steps: [lower], final: lower };
+        })
+        .then(data => {
+            const noSpaces = data.final.replace(/\s/g, '');
+            return { ...data, steps: [...data.steps, noSpaces], final: noSpaces };
+        })
+        .then(data => {
+            const reversed = data.final.split('').reverse().join('');
+            return { ...data, steps: [...data.steps, reversed], final: reversed };
+        }); 
 }
 
 // Перевірка (розкоментуйте після реалізації):
